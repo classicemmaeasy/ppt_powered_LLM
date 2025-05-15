@@ -141,11 +141,14 @@ from generate import generate_slides
 from choose_template import choose_template
 from build_pptx import build_presentation
 
+# --- MUST BE FIRST ---
+st.set_page_config(page_title="CBRE AI PPT Generator", layout="centered")
+# --------------------
+
 # 👇 Hide the Fork button in Streamlit Deploy
 st.markdown('<style>button[kind="header"] { display: none; }</style>', unsafe_allow_html=True)
 
-st.set_page_config(page_title="CBRE AI PPT Generator", layout="centered")
-st.title("📊 CBRE-Branded AI PowerPoint Generator")
+st.title("CBRE-Branded AI PowerPoint Generator")
 
 # User Inputs
 prompt = st.text_input("💡 What do you want to present?", "")
