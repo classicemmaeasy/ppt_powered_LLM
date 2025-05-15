@@ -22,6 +22,45 @@
 #     return output_path
 
 
+from pptx import Presentation
+
+def build_presentation(slide_data: dict, template_path: str, output_path="output.pptx") -> str:
+    prs = Presentation(template_path)
+
+    # ---- Clear all existing slides ----
+    for i in range(len(prs.slides)-1, -1, -1):
+        rId = prs.slides._sldIdLst[i].rId
+        prs.part.drop_rel(rId)
+        del prs.slides._sldIdLst[i]
+    # ----------------------------------
+
+    # Pick a default layout: usually slide_layouts[1] is Title + Content
+    layouts = prs.slide_layouts
+    default_layout = layouts[1] if len(layouts) > 1 else layouts[0]
+
+    # Add new slides based on slide_data
+    for s in slide_data["slides"]:
+        slide = prs.slides.add_slide(default_layout)
+        # Set title
+        if slide.shapes.title:
+            slide.shapes.title.text = s.get("title", "Click to add title")
+        # Set body content
+        placeholders = [ph for ph in slide.placeholders if ph.placeholder_format.idx != 0]
+        if placeholders:
+            tf = placeholders[0].text_frame
+            tf.clear()
+            for b in s.get("body", ["Click to add content"]):
+                p = tf.add_paragraph()
+                p.text = b
+
+    # Save the final presentation
+    prs.save(output_path)
+    return output_path
+
+
+
+
+
 
 # import os
 # from dotenv import load_dotenv
@@ -334,59 +373,126 @@
 #     return output_path
 
 
-from pptx import Presentation
-from pptx.enum.shapes import MSO_SHAPE_TYPE
+# from pptx import Presentation
+# from pptx.enum.shapes import MSO_SHAPE_TYPE
 
-def build_presentation(slide_data: dict, template_path: str, output_path="output.pptx") -> str:
-    prs = Presentation(template_path)
+# def build_presentation(slide_data: dict, template_path: str, output_path="output.pptx") -> str:
+#     prs = Presentation(template_path)
 
-    # Clear out all existing slides in the template
-    for i in range(len(prs.slides) - 1, -1, -1):
-        rId = prs.slides._sldIdLst[i].rId
-        prs.part.drop_rel(rId)
-        del prs.slides._sldIdLst[i]
+#     # Clear out all existing slides in the template
+#     for i in range(len(prs.slides) - 1, -1, -1):
+#         rId = prs.slides._sldIdLst[i].rId
+#         prs.part.drop_rel(rId)
+#         del prs.slides._sldIdLst[i]
 
-    for slide_info in slide_data["slides"]:
-        # Skip slide if image is specified in content
-        if "image_path" in slide_info:
-            continue
+#     for slide_info in slide_data["slides"]:
+#         # Skip slide if image is specified in content
+#         if "image_path" in slide_info:
+#             continue
 
-        # Try to pick a layout that has both title and at least one text frame
-        selected_layout = None
-        for layout in prs.slide_layouts:
-            has_title = any(sh.is_placeholder and sh.placeholder_format.type == 1 for sh in layout.placeholders)
-            has_body = any(sh.is_placeholder and sh.placeholder_format.type in (2, 3, 4) for sh in layout.placeholders)
-            if has_title and has_body:
-                selected_layout = layout
-                break
+#         # Try to pick a layout that has both title and at least one text frame
+#         selected_layout = None
+#         for layout in prs.slide_layouts:
+#             has_title = any(sh.is_placeholder and sh.placeholder_format.type == 1 for sh in layout.placeholders)
+#             has_body = any(sh.is_placeholder and sh.placeholder_format.type in (2, 3, 4) for sh in layout.placeholders)
+#             if has_title and has_body:
+#                 selected_layout = layout
+#                 break
 
-        # Fallback if no good layout found
-        if selected_layout is None:
-            selected_layout = prs.slide_layouts[0]
+#         # Fallback if no good layout found
+#         if selected_layout is None:
+#             selected_layout = prs.slide_layouts[0]
 
-        # Add slide with selected layout
-        slide = prs.slides.add_slide(selected_layout)
+#         # Add slide with selected layout
+#         slide = prs.slides.add_slide(selected_layout)
 
-        # Remove all image shapes
-        for shape in list(slide.shapes):
-            if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                slide.shapes._spTree.remove(shape._element)
-            elif shape.is_placeholder and shape.placeholder_format.type == 18:  # PICTURE placeholder
-                slide.shapes._spTree.remove(shape._element)
+#         # Remove all image shapes
+#         for shape in list(slide.shapes):
+#             if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+#                 slide.shapes._spTree.remove(shape._element)
+#             elif shape.is_placeholder and shape.placeholder_format.type == 18:  # PICTURE placeholder
+#                 slide.shapes._spTree.remove(shape._element)
 
-        # Set title (if available)
-        if slide.shapes.title:
-            slide.shapes.title.text = slide_info.get("title", "")
+#         # Set title (if available)
+#         if slide.shapes.title:
+#             slide.shapes.title.text = slide_info.get("title", "")
 
-        # Find the first usable body placeholder
-        for shape in slide.placeholders:
-            if shape.placeholder_format.idx != 0 and shape.has_text_frame:
-                tf = shape.text_frame
-                tf.clear()
-                for para in slide_info.get("body", []):
-                    p = tf.add_paragraph()
-                    p.text = para
-                break  # only fill the first body-like placeholder
+#         # Find the first usable body placeholder
+#         for shape in slide.placeholders:
+#             if shape.placeholder_format.idx != 0 and shape.has_text_frame:
+#                 tf = shape.text_frame
+#                 tf.clear()
+#                 for para in slide_info.get("body", []):
+#                     p = tf.add_paragraph()
+#                     p.text = para
+#                 break  # only fill the first body-like placeholder
 
-    prs.save(output_path)
-    return output_path
+#     prs.save(output_path)
+#     return output_path
+
+# from pptx import Presentation
+# from pptx.enum.shapes import MSO_SHAPE_TYPE
+# from pptx.util import Inches
+
+# def build_presentation(slide_data: dict, template_path: str, output_path="output.pptx") -> str:
+#     # Load the template presentation
+#     prs = Presentation(template_path)
+    
+#     # Clear out all existing slides in the template
+#     for i in range(len(prs.slides) - 1, -1, -1):
+#         rId = prs.slides._sldIdLst[i].rId
+#         prs.part.drop_rel(rId)
+#         del prs.slides._sldIdLst[i]
+
+#     # Iterate through each slide in the slide_data
+#     for slide_info in slide_data["slides"]:
+#         # Skip slide if image is specified in content
+#         if "image_path" in slide_info:
+#             continue
+
+#         # Try to pick a layout that has both title and at least one text frame
+#         selected_layout = None
+#         for layout in prs.slide_layouts:
+#             has_title = any(
+#                 sh.is_placeholder and sh.placeholder_format.type == 1 for sh in layout.placeholders
+#             )
+#             has_body = any(
+#                 sh.is_placeholder and sh.placeholder_format.type in (2, 3, 4) for sh in layout.placeholders
+#             )
+#             if has_title and has_body:
+#                 selected_layout = layout
+#                 break
+
+#         # Fallback if no good layout found
+#         if selected_layout is None:
+#             selected_layout = prs.slide_layouts[0]
+
+#         # Add slide with selected layout
+#         slide = prs.slides.add_slide(selected_layout)
+
+#         # Remove all image shapes
+#         for shape in list(slide.shapes):
+#             if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+#                 slide.shapes._spTree.remove(shape._element)
+#             elif shape.is_placeholder and shape.placeholder_format.type == 18:  # PICTURE placeholder
+#                 slide.shapes._spTree.remove(shape._element)
+
+#         # Set title (if available)
+#         if slide.shapes.title:
+#             slide.shapes.title.text = slide_info.get("title", "")
+
+#         # Find the first usable body placeholder
+#         for shape in slide.placeholders:
+#             if shape.is_placeholder and shape.placeholder_format.type in (2, 3, 4):  # Body placeholders
+#                 tf = shape.text_frame
+#                 tf.clear()
+                
+#                 # Add paragraphs from the body content
+#                 for para in slide_info.get("body", []):
+#                     p = tf.add_paragraph()
+#                     p.text = para
+#                 break  # Only fill the first body-like placeholder
+
+#     # Save the presentation
+#     prs.save(output_path)
+#     return output_path
