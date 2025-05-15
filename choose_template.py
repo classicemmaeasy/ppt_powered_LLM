@@ -101,6 +101,7 @@ import numpy as np
 from numpy.linalg import norm
 from pptx import Presentation
 from openai import OpenAI
+import streamlit as st
 import random
 
 # Load .env into environment
