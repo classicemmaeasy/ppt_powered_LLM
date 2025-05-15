@@ -3,3 +3,4 @@ openai
 python-pptx
 numpy
 scikit-learn
+dotenv
