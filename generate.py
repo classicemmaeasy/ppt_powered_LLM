@@ -55,7 +55,9 @@ from openai import OpenAI
 # Load .env into environment
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 SYSTEM_PROMPT = """
 You are a CBRE-branded presentation assistant. 
