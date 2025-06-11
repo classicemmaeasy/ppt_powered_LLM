@@ -3,8 +3,8 @@
 # from choose_template import choose_template
 # from build_pptx import build_presentation
 
-# st.set_page_config(page_title="CBRE AI PPT Generator")
-# st.title("CBRE-Branded AI PowerPoint Generator")
+# st.set_page_config(page_title="Powerpoint AI Generator")
+# st.title("PowerPoint AI Generator")
 
 # prompt   = st.text_input("What do you want to present?", "")
 # n_slides = st.number_input("Number of slides", min_value=1, max_value=30, value=10)
