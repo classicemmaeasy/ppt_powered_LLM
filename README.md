@@ -1,2 +1,2 @@
-The goal of this tool is to build Powerpoint Presentations using AI with the right layout, design and contents.
-User can enter their topics and specify the number of slides and it will generate a well structured content with an aesethetic design. 
+- The goal of this tool is to build Powerpoint Presentations using AI with the right layout, design and contents.
+- User can enter their topics and specify the number of slides and it will generate a well structured content with an aesethetic design. 
